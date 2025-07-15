@@ -1,14 +1,14 @@
 {
-  "name": "Keenly-xmd",
+  "name": "Royal-XMD",
   "version": "1.0.0",
-  "description": "A WhatsApp Bot Created By ObedTech",
+  "description": "A WhatsApp Bot Created and Powered by Lord Rahl",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name silva-spark-md",
-    "stop": "pm2 stop Keenly-xmd",
-    "restart": "pm2 restart Keenly-xmd"
+    "start": "pm2 start index.js --deep-monitoring --attach --name royal-xmd-md",
+    "stop": "pm2 stop Royal-XMD",
+    "restart": "pm2 restart Royal-XMD"
   },
-   "dependencies": {
+  "dependencies": {
     "@whiskeysockets/baileys": "npm:@fizzxydev/baileys-pro@8.5.12",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@dark-yasiya/yt-dl.js": "1.0.5",
@@ -34,16 +34,15 @@
     "megajs": "^1.1.0",
     "wa_set_pkg": "1.0.5",
     "wa-sticker-formatter": "^4.4.4",
-    "path": "^0.12.7",
     "vm": "^0.1.0",
     "cheerio": "^1.0.0-rc.12",
-    "ruhend-scraper" : "8.0.3",
+    "ruhend-scraper": "8.0.3",
     "qrcode-terminal": "^0.12.0",
-    "wikipedia":"2.1.2",
-    "yt-search":"2.11.1",
-    "api-dylux":"1.8.5",
-    "@mrnima/tiktok-downloader":"1.0.0",
-    "@mrnima/facebook-downloader":"1.0.0",
-    "mrnima-moviedl":"1.0.0"
+    "wikipedia": "2.1.2",
+    "yt-search": "2.11.1",
+    "api-dylux": "1.8.5",
+    "@mrnima/tiktok-downloader": "1.0.0",
+    "@mrnima/facebook-downloader": "1.0.0",
+    "mrnima-moviedl": "1.0.0"
   }
 }
