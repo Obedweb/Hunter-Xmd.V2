@@ -31,7 +31,7 @@
 Help support the project by clicking the buttons below. Fork it to your GitHub and give it a star!
 <div style="background: #111111; padding: 15px; border-radius: 10px; border-left: 3px solid #ff00ff;">
   <p style="color: #00ffff;">First star & Fork repo using button Below !</p>
-  <a href='https://github.com/MLILA17/DML-MD/fork' target="_blank">
+  <a href='https://github.com/Obedweb/Hunter-Xmd.V2/fork' target="_blank">
     <img src='https://img.shields.io/badge/FORK_REPOSITORY-008000?style=for-the-badge&logo=github&logoColor=white&labelColor=000000'/>
   </a>
 </div>
@@ -41,8 +41,8 @@ Help support the project by clicking the buttons below. Fork it to your GitHub a
 
 
 
-[![Fork](https://img.shields.io/github/forks/MLILA17/DML-MD?label=Fork&style=for-the-badge&logo=git)](https://github.com/MLILA17/DML-MD/fork)
-[![Star](https://img.shields.io/github/stars/MLILA17/DML-MD?label=Star&style=for-the-badge&logo=github)](https://github.com/MLILA17/DML-MD/stargazers)
+[![Fork](https://img.shields.io/github/forks/Obedweb/Hunter-Xmd.V2?label=Fork&style=for-the-badge&logo=git)](https://github.com/Obedweb/Hunter-Xmd.V2/fork)
+[![Star](https://img.shields.io/github/stars/Obedweb/Hunter-Xmd.V2?label=Star&style=for-the-badge&logo=github)](https://github/Obedweb/Hunter-Xmd.V2/stargazers)
 
 
 ---
