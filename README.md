@@ -50,7 +50,7 @@ Help support the project by clicking the buttons below. Fork it to your GitHub a
 ### 🔹 Step 2: Generate Session ID
 ɪꜰ ᴛʜᴇ ᴘʀɪᴍᴀʀʏ ꜱᴇꜱꜱɪᴏɴ ɢᴇɴᴇʀᴀᴛᴏʀ ꜰᴀɪʟꜱ ꜱᴡɪᴛᴄʜ ᴛᴏ ᴛʜᴇ ꜱᴇᴄᴏɴᴅᴀʀʏ ᴏᴘᴛɪᴏɴ.:
 
-[![Hunter pair site](https://img.shields.io/badge/🔍_SCAN_QR-FF6347?style=for-the-badge&logo=qr-code&logoColor=white)](https://hunter-xmd-2-sessions-web-zz93.vercel.app/) 
+[![Hunter pair site](https://img.shields.io/badge/🔍_SCAN_QR-FF6347?style=for-the-badge&logo=pair-site&logoColor=white)](https://hunter-xmd-2-sessions-web-zz93.vercel.app/) 
 
 
 ---
