@@ -1,14 +1,14 @@
-<h2 align="center" style="color: #FF6347; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); animation: glow 2s infinite alternate;">WELCOME TO DML-MD
+<h2 align="center" style="color: #FF6347; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); animation: glow 2s infinite alternate;">𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐇𝐔𝐍𝐓𝐄𝐑-𝐗𝐌𝐃.𝐕𝟐
 
 </h2>
-<h3 align="center" style="color: #1BAFBA; font-weight: bold;">Powerful WhatsApp Bot for Tanzania</h3>
+<h3 align="center" style="color: #1BAFBA; font-weight: bold;">ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ꜰʀᴏᴍ ᴏʙᴇᴅᴛᴇᴄʜ</h3>
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=26&duration=3000&pause=1000&color=FF6347&center=true&width=900&height=100&lines=HELLO+WORLD!+👋;MEET+DML-MD+🤖;ADVANCED+WHATSAPP+BOT+EXPERIENCE+⚡;MADE+WITH+PASSION+BY+DML+💻;OFFICIALLY+TANZANIAN+BOT+🎉" alt="Typing Animation">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=26&duration=3000&pause=1000&color=FF6347&center=true&width=900&height=100&lines=HELLO+WORLD!+👋;MEET+HUNTER-XMDV5+🤖;ADVANCED+WHATSAPP+BOT+EXPERIENCE+⚡;MADE+WITH+PASSION+BY+OBEDTECH+💻;OFFICIALLY+TANZANIAN+BOT+🎉" alt="Typing Animation">
 </p>
 
 <p align="center">
-  <img alt="DML-MD" width="700" height="300" src="https://files.catbox.moe/cy87s9.jpg">
+  <img alt="HUNTERXMDV5" width="700" height="300" src="https://files.catbox.moe/cy87s9.jpg">
 </p>
 
 
