@@ -1,199 +1,142 @@
 {
-  "name": "𝙆𝙀𝙀𝙉𝙇𝙔 𝙓𝙈𝘿",
-  "description": "Javascript WhatsApp bot made by Silva.",
-  "keywords": ["Keenly-xmd"],
-  "success_url": "/",
-
-    "stack": "container",
-  "env": {
-    "SESSION_ID": {
-      "description": "Put the session-id here.",
+  "name": "𝐇𝐔𝐍𝐓𝐄𝐑-𝐗𝐌𝐃.𝐕𝟐",
+  "description": "I am Obed tech WhatsApp MultiDevice Bot built in NodeJs to enhance the experience.",
+  "logo": "https://files.catbox.moe/lls7dy.jpg",
+  "keywords": ["HUNTER-XMD.2"],
+  "repository": "https://github.com/Obedweb/Hunter-Xmd1",
+  "stack": "container",
+  "env": { 
+      "SESSION_ID": {
+      "description": "your session id",
       "required": true,
       "value": ""
-    },  
-    
-    "ALIVE_IMG": {
-      "description": "paste your image url if you don't have you can use this public url.",
-      "required": false,
-      "value": "https://res.cloudinary.com/dgy2dutjs/image/upload/v1751655991/url.crissvevo.co.tz/%E1%B4%8F%CA%99%E1%B4%87%E1%B4%85%E1%B4%9B%E1%B4%87%E1%B4%84%CA%9C_n6bjii.jpg"
-    }, 
-    
-    "LIVE_MSG": {
-      "description": "paste your alive message hear.",
-      "required": false,
-      "value": "> ᴋᴇᴇɴʟʏ xᴍᴅ ɪꜱ ᴀᴄᴛɪᴠᴇ ᴀɴᴅ ᴀʟɪᴠᴇ⚡"
     },
-    "ANTIDELETE_PRIVATE": {
-      "description": "when someone deletes a message on dm the bot restores it.",
-      "required": true,
-      "value": "true"
-    },
-    "ANTIDELETE_GROUP": {
-      "description": "when someone deletes a message in group the bot restores it.",
-      "required": true,
-      "value": "true"
-    },
-    
-    "PREFIX": {
-      "description": "paste your bot prefix note! Don't apply null prefix.",
-      "required": false,
-      "value": "."
-    },
-    
     "MODE": {
-      "description": "select your bot work type public-private-inbox-group.",
-      "required": false,
+      "description": "mode public or self",
+      "required": true,
       "value": "public"
-      
     },
-
-    "AUTO_STATUS_REACT": {
-      "description": "Make it true if want auto status react.",
+    "BOT_NAME": {
+      "description": "change bot name what you want!",
       "required": false,
-      "value": "true"  
+      "value": "𝐇𝐔𝐍𝐓𝐄𝐑-𝐗𝐌𝐃.𝐕𝟐"
     },
-    
-    
-    "ALWAYS_ONLINE": {
-      "description": "Make it true if want always online.",
+    "MENU_IMAGE": {
+      "description": "change menu image if want otherwise use default",
       "required": false,
-      "value": "false"  
-    },    
-  
-    "AUTO_VOICE": {
-      "description": "Make it true if want automatic voice reply .",
+      "value": "https://files.catbox.moe/lls7dy.jpg"
+    },
+    "DESCRIPTION": {
+      "description": "add caption for menu and etc",
       "required": false,
-      "value": "false"
-    }, 
-
-    "AUTO_REPLY": {
-      "description": "Make it true if you want automatic reply.",
-      "required": false,
-      "value": "false"
-    }, 
-
-    "AUTO_STICKER": {
-      "description": "Make it true if you want automatic sticker.",
-      "required": false,
-      "value": "false"
-    }, 
-
-
-    "AUTO_STATUS_SEEN": {
-      "description": "Make it true for automatic status seen.",
+      "value": "> powered by ᴏʙᴇᴅᴛᴇᴄʜ"
+    },
+    "ANTI_DELETE": {
+      "description": "set path for antidelete for same chat set to same",
+      "required": true,
+      "value": "inbox"
+    },
+    "ANTI_DELETE_PATH": {
+      "description": "make it true for use anti delete",
+      "required": true,
+      "value": "true"
+    },
+       "AUTO_STATUS_REACT": {
+      "description": "make it true for automatic status reaction or like.",
       "required": true,
       "value": "true"
     }, 
-
+    
+    "AUTO_STATUS_SEEN": {
+      "description": "make it true if you want bot to view status",
+      "required": false,
+      "value": "true"
+    },
     "AUTO_STATUS_REPLY": {
-      "description": "Make it true for auto reply msg on status seen.",
-      "required": true,
+      "description": "make it true if you want to send message after seen status",
+      "required": false,
       "value": "false"
-    }, 
-
-    "AUTO_STATUS__MSG": {
-      "description": "Type custom message on status reply",
-      "required": true,
-      "value": "*🎉👀 ꜱᴇᴇɴ ʙʏ ᴋᴇᴇɴʏ xᴍᴅ 🚀🔥*"
-    }, 
-
+    },
+    "STATUS_READ_MSG": {
+      "description": "set your status reply message",
+      "required": false,
+      "value": "*Just saw your status. Keep it 100, fam! 🖤*"
+    },
     "OWNER_NAME": {
-      "description": "Type Bot Owner Name.",
+      "description": "set owner name",
       "required": false,
       "value": "ᴏʙᴇᴅ ᴛᴇᴄʜ"
-}, 
-
+    },
     "OWNER_NUMBER": {
-      "description": "put the owner number for bot.",
+      "description": "set your owner number",
       "required": false,
-      "value": "254740694462"
-
-    }, 
-
-    "BOT_NAME": {
-      "description": "Type here the bot name.",
-      "required": false,
-      "value": "✦ 𝙆𝙀𝙀𝙉𝙇𝙔 𝙓𝙈𝘿 ✦"
-
-      }, 
-
-    "ANTI_LINK": {
-      "description": "Make it true if you want bot auto remove group link.",
-      "required": true,
-      "value": "true"
-      
+      "value": "254787892183"
     },
-    
-    "ANTI_BAD": {
-      "description": "Make it true if you want bot auto delete bad words.",
-      "required": false,
-      "value": "false"
-    }, 
-
-     "DESCRIPTION": {
-      "description": "add caption for menu and other",
-      "required": false,
-      "value": "*© ✦ 𝙆𝙀𝙀𝙉𝙇𝙔 𝙓𝙈𝘿 ✦*"
-    },
-
-      "DELETE_LINKS": {
-      "description": "remove links from group automatically without removing member",
-      "required": false,
-      "value": "true"
-    },
-    
-    "AUTO_RECORDING": {
-      "description": "Make it true if you want auto recoding.",
-      "required": false,
-      "value": "true"
-    },
-
-    "AUTO_TYPING": {
-      "description": "Make it true if you want auto typing.",
+    "AUTO_READ": {
+      "description": "make it true if you want bot to read message",
       "required": false,
       "value": "false"
     },
-
+    
     "AUTO_REACT": {
       "description": "Make it true if you want react on every message.",
       "required": false,
       "value": "false"
     },
-
-    "OWNER_REACT": {
-      "description": "Make it true if you only want react on Owner Massages.",
-      "required": false,
-      "value": "true"
-      
-    }, 
-    
-    "CUSTOM_REACT": {
-      "description": "Make it true if you want custom reactions.",
-      "required": false,
-      "value": "true"
-      
-    }, 
-    
-    "CUSTOM_REACT_EMOJIS": {
-      "description": "put here custom react react emojis.",
-      "required": false,
-      "value": "💝,💖,💗,❤️‍🔥,❤️‍🩹,❤️,🩷,🧡,💛,💚,💙,🩵,💜,🤎,🖤,🩶,🤍"
-    }, 
-
-
-    "READ_MESSAGE": {
-      "description": "Make it true if you want bot read your all sms just now.",
+    "AUTO_TYPING": {
+      "description": "make it true if you want bot to show typing",
       "required": false,
       "value": "false"
+    },
+    "AUTO_RECORDING": {
+      "description": "make it true if you want bot to show recording audio",
+      "required": false,
+      "value": "true"
+    },
+    "ALWAYS_ONLINE": {
+      "description": "make it true if you want bot to show always online",
+      "required": false,
+      "value": "false"
+    },
+    "AUTO_BLOCK": {
+      "description": "make it true if you want bot to auto block only 212 numbers",
+      "required": false,
+      "value": "false"
+    },
+    "REJECT_CALL": {
+      "description": "make it true if you want to reject call",
+      "required": false,
+      "value": "false"
+    },
+    "WELCOME": {
+      "description": "make it true if you want to enable auto welcome",
+      "required": false,
+      "value": "true" 
+      },
+    "ANTILINK": {
+      "description": "make it true if you want to enable auto delete links",
+      "required": false,
+      "value": "true"  
+    },
+    "PREFIX": {
+      "description": "Your Bot Prefix default (.)",
+      "required": false,
+      "value": "."
     }
-
-},
-
-     "buildpacks": [
-        {
-            "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
-        }
-     ],
-  "stack": "heroku-24"
+    },
+    "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/DuckyTeam/heroku-buildpack-imagemagick.git"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    },
+    {
+      "url": "https://github.com/clhuang/heroku-buildpack-webp-binaries.git"
+    }
+  ]
 }
-  
+
